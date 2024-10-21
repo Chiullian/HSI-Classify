@@ -9,8 +9,8 @@ import scipy.io as sio
 
 def loadData():  # 读取数据集文件
     # 读入数据
-    data = sio.loadmat('./data/Indian_pines/Indian_pines_corrected.mat')['indian_pines_corrected']
-    labels = sio.loadmat('./data/Indian_pines/Indian_pines_gt.mat')['indian_pines_gt']
+    data = sio.loadmat('../data/Indian_pines/Indian_pines_corrected.mat')['indian_pines_corrected']
+    labels = sio.loadmat('../data/Indian_pines/Indian_pines_gt.mat')['indian_pines_gt']
     return data, labels
 
 
