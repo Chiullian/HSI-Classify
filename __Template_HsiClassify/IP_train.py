@@ -37,9 +37,7 @@ def train(train_loader, epochs):
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
-        print('[Epoch: %d]   [loss avg: %.4f]   [current loss: %.4f]' % (epoch + 1,
-                                                                         total_loss / (epoch + 1),
-                                                                         loss.item()))
+        print('[Epoch: %d]   [loss avg: %.4f]   [current loss: %.4f]' % (epoch + 1, total_loss / (epoch + 1), loss.item()))
 
     print('Finished Training')
 
