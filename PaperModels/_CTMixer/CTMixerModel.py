@@ -4,8 +4,8 @@ from einops import rearrange
 from torch import nn
 from torchinfo import summary
 
-from Models.CTMixerEmbeddings import PatchEmbeddings, PositionalEmbeddings
-from Models.CTMixerTransformer import Transformer
+from PaperModels._CTMixer.CTMixerEmbeddings import PatchEmbeddings, PositionalEmbeddings
+from PaperModels._CTMixer.CTMixerTransformer import Transformer
 
 
 class GPRB(nn.Module):
