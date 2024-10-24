@@ -15,6 +15,7 @@ def _weights_init(m):
     if isinstance(m, nn.Linear) or isinstance(m, nn.Conv3d):
         init.kaiming_normal_(m.weight)
 
+
 class Residual(nn.Module):
     def __init__(self, fn):
         super().__init__()
@@ -22,6 +23,7 @@ class Residual(nn.Module):
 
     def forward(self, x, **kwargs):
         return self.fn(x, **kwargs) + x
+
 
 # 等于 PreNorm
 class LayerNormalize(nn.Module):
@@ -32,6 +34,7 @@ class LayerNormalize(nn.Module):
 
     def forward(self, x, **kwargs):
         return self.fn(self.norm(x), **kwargs)
+
 
 # 等于 FeedForward
 class MLP_Block(nn.Module):
@@ -66,9 +69,8 @@ class Attention(nn.Module):
         self.do1 = nn.Dropout(dropout)
 
     def forward(self, x, mask=None):
-
         b, n, _, h = *x.shape, self.heads
-        qkv = self.to_qkv(x).chunk(3, dim = -1)  # gets q = Q = Wq matmul x1, k = Wk mm x2, v = Wv mm x3
+        qkv = self.to_qkv(x).chunk(3, dim=-1)  # gets q = Q = Wq matmul x1, k = Wk mm x2, v = Wv mm x3
         q, k, v = map(lambda t: rearrange(t, 'b n (h d) -> b h n d', h=h), qkv)  # split into multi head attentions
 
         dots = torch.einsum('bhid,bhjd->bhij', q, k) * self.scale
@@ -106,10 +108,13 @@ class Transformer(nn.Module):
             x = mlp(x)  # go to MLP_Block
         return x
 
+
 NUM_CLASS = 16
 
+
 class SSFTTnet(nn.Module):
-    def __init__(self, in_channels=1, num_classes=NUM_CLASS, num_tokens=4, dim=64, depth=1, heads=8, mlp_dim=8, dropout=0.1, emb_dropout=0.1):
+    def __init__(self, in_channels=1, num_classes=NUM_CLASS, num_tokens=4, dim=64, depth=1, heads=8, mlp_dim=8,
+                 dropout=0.1, emb_dropout=0.1):
         super(SSFTTnet, self).__init__()
         self.L = num_tokens
         self.cT = dim
@@ -120,7 +125,7 @@ class SSFTTnet(nn.Module):
         )
 
         self.conv2d_features = nn.Sequential(
-            nn.Conv2d(in_channels=8*28, out_channels=64, kernel_size=(3, 3)),
+            nn.Conv2d(in_channels=8 * 28, out_channels=64, kernel_size=(3, 3)),
             nn.BatchNorm2d(64),
             nn.ReLU(),
         )
@@ -147,11 +152,10 @@ class SSFTTnet(nn.Module):
         torch.nn.init.normal_(self.nn1.bias, std=1e-6)
 
     def forward(self, x, mask=None):
-
         x = self.conv3d_features(x)
         x = rearrange(x, 'b c h w y -> b (c h) w y')
         x = self.conv2d_features(x)
-        x = rearrange(x,'b c h w -> b (h w) c')
+        x = rearrange(x, 'b c h w -> b (h w) c')
 
         wa = rearrange(self.token_wA, 'b h w -> b w h')  # Transpose
         A = torch.einsum('bij,bjk->bik', x, wa)
@@ -159,8 +163,8 @@ class SSFTTnet(nn.Module):
         A = A.softmax(dim=-1)
 
         VV = torch.einsum('bij,bjk->bik', x, self.token_wV)
+        print(A.shape, VV.shape)
         T = torch.einsum('bij,bjk->bik', A, VV)
-
         cls_tokens = self.cls_token.expand(x.shape[0], -1, -1)
         x = torch.cat((cls_tokens, T), dim=1)
         x += self.pos_embedding
@@ -180,4 +184,3 @@ if __name__ == '__main__':
     y = model(input)
     summary(model, input_size=(64, 1, 30, 13, 13), device="cpu")
     print('Total number of parameters:', parameters)
-
