@@ -163,7 +163,6 @@ class SSFTTnet(nn.Module):
         A = A.softmax(dim=-1)
 
         VV = torch.einsum('bij,bjk->bik', x, self.token_wV)
-        print(A.shape, VV.shape)
         T = torch.einsum('bij,bjk->bik', A, VV)
         cls_tokens = self.cls_token.expand(x.shape[0], -1, -1)
         x = torch.cat((cls_tokens, T), dim=1)
