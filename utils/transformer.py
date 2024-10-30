@@ -196,6 +196,7 @@ class Encoder(nn.Module):
         get_attn_pad_mask只是是为了得到句子中 pad 的位置信息
         forward 一般是调用上面定义的函数, 这样想就知道下一步干啥
         """
+        print(X)
         enc_self_attn_mask = get_attn_pad_mask(X, X)
         X = self.src_emb(X)
         X += self.pos_emb(X)
