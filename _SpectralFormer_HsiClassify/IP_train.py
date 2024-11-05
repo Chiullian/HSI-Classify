@@ -97,7 +97,7 @@ if __name__ == '__main__':
     tic1 = time.perf_counter()
     net, device = train(train_loader, epochs=100)
     # 只保存模型参数
-    torch.save(net.state_dict(), 'model_params/SSFTT_IP_params.pth')
+    torch.save(net.state_dict(), 'model_params/SSFTT_UH_params.pth')
     toc1 = time.perf_counter()
     tic2 = time.perf_counter()
     y_pred_test, y_test = test(device, net, test_loader)
@@ -107,7 +107,7 @@ if __name__ == '__main__':
     classification = str(classification)
     Training_Time = toc1 - tic1
     Test_time = toc2 - tic2
-    file_name = "model_result/SSFTT_IP_classification_report.txt"
+    file_name = "model_result/SSFTT_UH_classification_report.txt"
     with open(file_name, 'w') as x_file:
         x_file.write('{} Training_Time (s)'.format(Training_Time))
         x_file.write('\n')
