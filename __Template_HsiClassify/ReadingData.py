@@ -1,3 +1,5 @@
+import os
+
 import torch
 from einops import rearrange
 from sklearn.decomposition import PCA
@@ -7,20 +9,53 @@ import numpy as np
 import scipy.io as sio
 
 
-def loadData():  # 读取数据集文件
-    # 读入数据
-    data = sio.loadmat('../data/Indian_pines/Indian_pines_corrected.mat')['indian_pines_corrected']
-    labels = sio.loadmat('../data/Indian_pines/Indian_pines_gt.mat')['indian_pines_gt']
-    return data, labels
+class LoadingData:
+    def __init__(self, base_path='D:/HSI_datasets/'):
+        self.base_path = base_path
+        self.data_info = {
+            'indian': ('indian_pines_corrected.mat', 'indian_pines_gt.mat', 'indian_pines_corrected', 'indian_pines_gt')
+            ,
+            'pavia': ('PaviaU.mat', 'PaviaU_gt.mat', 'paviaU', 'paviaU_gt')
+            ,
+            'ksc': ('KSC.mat', 'KSC_gt.mat', 'KSC', 'KSC_gt')
+            ,
+            'sali': ('Salinas_corrected.mat', 'Salinas_gt.mat', 'salinas_corrected', 'salinas_gt')
+            ,
+            'sali_a': ('SalinasA_corrected.mat', 'SalinasA_gt.mat', 'salinasA', 'salinasA_gt')
+            ,
+            'houston': ('Houston.mat', 'Houston_GT.mat', 'Houston', 'Houston_GT')
+            ,
+            'hanchuan': ('WHU_Hi_HanChuan.mat', 'WHU_Hi_HanChuan_gt.mat', 'WHU_Hi_HanChuan', 'WHU_Hi_HanChuan_gt')
+            ,
+            'honghu': ('WHU_Hi_HongHu.mat', 'WHU_Hi_HongHu_gt.mat', 'WHU_Hi_HongHu', 'WHU_Hi_HongHu_gt')
+            ,
+            'longkou': ('WHU_Hi_LongKou.mat', 'WHU_Hi_LongKou_gt.mat', 'WHU_Hi_LongKou', 'WHU_Hi_LongKou_gt')
+            ,
+            'HU2018': ('Houston2018.mat', 'Houston2018_GT.mat', 'Houston2018', 'Houston2018_GT')
+            ,
+            'paviaC': ('Pavia.mat', 'Pavia_gt.mat', 'pavia', 'pavia_gt')
+        }
 
+    def Loading(self, name='indian', num_components=None):
+        if name not in self.data_info:
+            raise ValueError("Invalid dataset flag provided.")
 
-# 对高光谱数据 X 应用 PCA 变换
-def applyPCA(X, numComponents):
-    newX = np.reshape(X, (-1, X.shape[2]))
-    pca = PCA(n_components=numComponents, whiten=True)
-    newX = pca.fit_transform(newX)
-    newX = np.reshape(newX, (X.shape[0], X.shape[1], numComponents))
-    return newX
+        data = sio.loadmat(os.path.join(self.base_path, self.data_info[name][0]))[self.data_info[name][2]]
+        labels = sio.loadmat(os.path.join(self.base_path, self.data_info[name][1]))[self.data_info[name][3]]
+
+        h, w, c = data.shape
+
+        if name == 'hanchuan' or name == 'honghu' or name == 'longkou':
+            data = data.astype(np.int64)
+
+        data = data.reshape(-1, data.shape[-1])
+
+        if num_components is not None:
+            data = PCA(n_components=num_components).fit_transform(data)
+            data = data.reshape(h, w, num_components)
+
+        num_class = len(np.unique(labels)) - 1
+        return data, labels, num_class, h, w, c
 
 
 def ImageCut(X, y, window_size=11, remove_zero_labels=True):
@@ -129,15 +164,11 @@ def DataLoaders(X, y, testRatio=0.9, batch_size=64, randomState=324, shuffle=Tru
 
 
 def PreprocessedData(batch_size=64, patch_size=13, test_ratio=0.9, pca_components=30):
-    X, y = loadData()
+    Ld = LoadingData()
+
+    X, y, num_classes, h, w, c = Ld.Loading('indian', num_components=pca_components)
     print('高光谱图形的维度形状为: ', X.shape)
     print('正确的标签形状为: ', y.shape)
-
-    if pca_components != 0:
-        print('\n... ... PCA(降维度) 转变 ... ...')
-        X = applyPCA(X, numComponents=pca_components)
-        print('降维度后的高光谱形状为: ', X.shape)
-
     print(f'\n以每一个像素点为中心形成宽高为 patch = {patch_size} 的立方体')
     X_pca, y_pca = ImageCut(X, y, window_size=patch_size, remove_zero_labels=True)
     print('所有立方体的 X 的形状为: ', X_pca.shape)
@@ -145,7 +176,7 @@ def PreprocessedData(batch_size=64, patch_size=13, test_ratio=0.9, pca_component
 
     print('\n... ... 创建训练和测试数据 ... ...')
     trainLoader, testLoader, allLoader = DataLoaders(X_pca, y_pca, batch_size=batch_size, testRatio=test_ratio)
-    return trainLoader, testLoader, allLoader, y
+    return trainLoader, testLoader, allLoader, y, num_classes
 
 
 if __name__ == '__main__':
@@ -154,5 +185,5 @@ if __name__ == '__main__':
     TEST_RATIO = 0.9
     PcaNum = 30
     class_num = 16
-    train_loader, test_loader, all_data_loader, y_all = PreprocessedData(
+    train_loader, test_loader, all_data_loader, y_all, num_classes = PreprocessedData(
         batch_size=BATCH_SIZE, test_ratio=TEST_RATIO, pca_components=PcaNum)

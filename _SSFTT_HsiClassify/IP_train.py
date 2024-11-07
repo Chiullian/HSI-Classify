@@ -104,6 +104,7 @@ if __name__ == '__main__':
     toc2 = time.perf_counter()
     # 评价指标
     classification, oa, confusion, each_acc, aa, kappa = acc_reports(y_test, y_pred_test)
+    print('//////////////////',y_pred_test.shape, y_test.shape)
     classification = str(classification)
     Training_Time = toc1 - tic1
     Test_time = toc2 - tic2

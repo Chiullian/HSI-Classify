@@ -65,20 +65,18 @@ def test(device, net, test_loader):
     return y_pred_test, y_test
 
 
-def AA_andEachClassAccuracy(confusion_matrix):
-    list_diag = np.diag(confusion_matrix)
-    list_raw_sum = np.sum(confusion_matrix, axis=1)
-    each_acc = np.nan_to_num(truediv(list_diag, list_raw_sum))
-    average_acc = np.mean(each_acc)
-    return each_acc, average_acc
-
+def AA_andEachClassAccuracy(ConfusionMatrix):
+    counter = confusion_matrix.shape[0]
+    list_diag = np.diag(ConfusionMatrix)
+    list_raw_sum = np.sum(ConfusionMatrix, axis=1)
+    EachAcc = np.nan_to_num(truediv(list_diag, list_raw_sum))
+    AverageAcc = np.mean(each_acc)
+    return EachAcc, AverageAcc
 
 def acc_reports(y_test, y_pred_test):
-    target_names = ['Alfalfa', 'Corn-notill', 'Corn-mintill', 'Corn'
-        , 'Grass-pasture', 'Grass-trees', 'Grass-pasture-mowed',
-                    'Hay-windrowed', 'Oats', 'Soybean-notill', 'Soybean-mintill',
-                    'Soybean-clean', 'Wheat', 'Woods', 'Buildings-Grass-Trees-Drives',
-                    'Stone-Steel-Towers']
+    target_names = ['Alfalfa', 'Corn-notill', 'Corn-mintill', 'Corn','Grass-pasture', 'Grass-trees',
+                    'Grass-pasture-mowed', 'Hay-windrowed', 'Oats', 'Soybean-notill', 'Soybean-mintill',
+                    'Soybean-clean', 'Wheat', 'Woods',  'Buildings-Grass-Trees-Drives', 'Stone-Steel-Towers']
     classification = classification_report(y_test, y_pred_test, digits=4, target_names=target_names)
     oa = accuracy_score(y_test, y_pred_test)
     confusion = confusion_matrix(y_test, y_pred_test)
