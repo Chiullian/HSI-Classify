@@ -100,6 +100,7 @@ def test(device, net, test_loader):
 
 def get_cls_map(net, device, all_data_loader, y):
     y_pred, y_new = test(device, net, all_data_loader)
+    print("************************", y.shape)
     cls_labels = get_classification_map(y_pred, y)
     x = np.ravel(cls_labels)
     gt = y.flatten()
