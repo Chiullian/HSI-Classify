@@ -24,3 +24,14 @@
 
 下一个模块就是卷积模块:
 > 重要贡献也就是创新点(空间光谱注意模块简称RSSA模块)来学习重要的特征: 
+
+![](https://image.chiullian.cn/img/202411091638935.png)
+
+光谱维度的注意权重计算图:
+
+![](https://image.chiullian.cn/img/202411091639270.png)
+
+空间注意的权重计算题
+
+![](https://image.chiullian.cn/img/202411091639954.png)
+
