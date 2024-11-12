@@ -1,7 +1,9 @@
 # Multiscale Dynamic Graph Convolutional Network  for Hyperspectral Image Classification
 
+## 论文前置知识
+
 #### superpixels（超像素）
-> 貌似大部分基于GCN的网络都会使用SLIC先去进行
+> 貌似大部分基于GCN/GNN/GAT的网络都会使用SLIC先去进行
 > 
 > 超像素的概念: 超像素是一系列像素的集合，这些像素具有类似的颜色、纹理等特征，距离也比较近。用超像素对一张图片进行分割的结果见下图，其中每个白色线条区域内的像素集合就是一个超像素。需要注意的是，超像素很可能把同一个物体的不同部分分成多个超像素。
 
@@ -37,3 +39,13 @@
 图注意力的总体模型:
 
 ![](https://image.chiullian.cn/img/202411112242773.png)
+
+
+#### 如何实现 ? 待验证
+
+## 论文的正文
+
+论文的邻接矩阵使用如下的权重设定, i和j之间的距离为...
+
+![](https://image.chiullian.cn/img/202411121554119.png)
+

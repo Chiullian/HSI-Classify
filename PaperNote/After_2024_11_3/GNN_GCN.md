@@ -51,3 +51,67 @@ GNN 的消息传递神经网络去更新图, GNN采用“graph-in，graph-out”
 调参: 层数, Embedding有多大, 汇聚用什么操作, 怎么做信息的传递.
 
 > 如不还不懂只需要知道:不同GNN的本质差别就在于它们如何进行节点之间的信息传递和计算，也就是它们的消息传递机制不同。就可以了！
+
+
+# GCN 
+
+首先 将节点EmBedding嵌入
+
+![](https://image.chiullian.cn/img/202411121627791.png)
+
+所有的黑色盒子是第一个神经网络(3个黑盒子共用一个神经神经网络, 三个黑盒子里可以是最简单的多层感知机), 白色盒子是第二个神经网络
+
+![](https://image.chiullian.cn/img/202411121625529.png)
+
+每一个点构建自己的计算图, batch_size
+![](https://image.chiullian.cn/img/202411121630938.png)
+
+图节点一般不能太深, 这样越靠后会产生Over Smoothing 问题, 所有节点的嵌入都会得到一个值
+
+下面举了个例子:
+256 * 1 就是A的n+1输出
+
+![](https://image.chiullian.cn/img/202411121648730.png)
+
+最基础的图卷积神经网络如下
+
+![](https://image.chiullian.cn/img/202411121722143.png)
+
+### 图卷积的数学表达
+
+经典表达:
+
+![](https://image.chiullian.cn/img/202411121825868.png)
+
+#### 矩阵表达!
+
+![](https://image.chiullian.cn/img/202411121948437.png)
+
+(包含所有节点信息的向量 H(k)) 左乘 A(A矩阵其实就是邻接表) 表示求和(把所有A[v, :]相邻节点的信息都加起来),  左乘 D-1 相当于求平均, 
+直接乘是有问题的, 没有考虑到权重的问题, 这里考虑的是右乘一个 D-1 (考虑相邻节点的度数),
+
+> 最本质的也是最重要的: 算出来的 `A波浪` 其实就是加权后的邻接表
+
+![](https://image.chiullian.cn/img/202411122029614.png)
+
+> 图确定下来了, 红框里的东西也就确定下来了
+
+![](https://image.chiullian.cn/img/202411122028625.png)
+
+#### 数学形式概览
+
+![](https://image.chiullian.cn/img/202411122043252.png)
+
+上面的计算都没有关注自己, 只看了相邻的点的评价,
+
+下面是带有走向自己的评价
+
+两种关注自己的方式:
+
+![](https://image.chiullian.cn/img/202411122050119.png)
+
+![](https://image.chiullian.cn/img/202411122107392.png)
+
+## 如何训练的
+
+![](https://image.chiullian.cn/img/202411122118476.png)
