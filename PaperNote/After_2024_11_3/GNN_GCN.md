@@ -115,3 +115,12 @@ GNN 的消息传递神经网络去更新图, GNN采用“graph-in，graph-out”
 ## 如何训练的
 
 ![](https://image.chiullian.cn/img/202411122118476.png)
+
+#### GCN 的从大看的框架
+
+![](https://image.chiullian.cn/img/202411122158912.png)
+
+#### 图的分类, 每个节点(待分类的点)d维度的向量, 随着图的训练, 向量的质量会变的越来越高, 下图是分类图,(感觉可以之后用)
+
+![](https://image.chiullian.cn/img/202411122201636.png)
+
