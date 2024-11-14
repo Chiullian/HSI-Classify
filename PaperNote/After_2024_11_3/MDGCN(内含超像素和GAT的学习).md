@@ -92,3 +92,8 @@ GCN 部分的优化点, 传统GCN的一个主要缺点是在整个卷积过程�
 
 ![](https://image.chiullian.cn/img/202411142253982.png)
 通过当前超像素点相邻的和跳一块相邻的进行融合
+
+具体的多尺度流程:
+
+
+![](https://image.chiullian.cn/img/202411142259528.png)
